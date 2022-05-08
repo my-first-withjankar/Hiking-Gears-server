@@ -23,13 +23,6 @@ async function run() {
         await client.connect()
         const collectionProduct = client.db('hikingGears').collection('product')
 
-        //post product
-        app.post('/products', async (req, res) => {
-            const user = req.body;
-            // console.log(user);
-            const result = await collectionProduct.insertOne(user);
-            res.send(result)
-        });
 
         //get all products
         app.get('/products', async (req, res) => {
@@ -41,6 +34,18 @@ async function run() {
 
         })
 
+
+
+        //post product
+        app.post('/products', async (req, res) => {
+            const user = req.body;
+            // console.log(user);
+            const result = await collectionProduct.insertOne(user);
+            res.send(result)
+        });
+
+
+
         //get single products
         app.get('/products/:id', async (req, res) => {
             const id = req.params.id;
@@ -49,6 +54,8 @@ async function run() {
             res.send(result)
         })
 
+
+        //update products
         app.put('/products/:id', async (req, res) => {
             const id = req.params.id;
             const updatedStock = req.body;
@@ -64,6 +71,8 @@ async function run() {
             res.send(result)
         })
 
+
+        //delete products
         app.delete('/products/:id', async (req, res) => {
             const id = req.params.id;
             const query = { _id: ObjectId(id) };
@@ -73,7 +82,7 @@ async function run() {
 
 
         app.get('/product', async (req, res) => {
-            const email = req.query.email;
+            const email = req.query.email;  
             console.log(email);
             const query = { email: email };
             const cursor = collectionProduct.find(query);
