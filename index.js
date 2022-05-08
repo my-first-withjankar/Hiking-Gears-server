@@ -12,10 +12,7 @@ app.use(cors());
 app.use(express.json());
 
 app.get('/', (req, res) => {
-    res.send('fuck you')
-});
-app.get('/hero', (req, res) => {
-    res.send('fuck you and you')
+    res.send('server side is running')
 });
 
 
