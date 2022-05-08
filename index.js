@@ -1,5 +1,6 @@
 const express = require('express');
 const cors = require('cors');
+const jwt = require('jsonwebtoken');
 const app = express()
 const { MongoClient, ServerApiVersion, ObjectId } = require('mongodb');
 const { send } = require('express/lib/response');
@@ -10,6 +11,15 @@ require('dotenv').config()
 //middleware
 app.use(cors());
 app.use(express.json());
+//jwt
+function verifyJwt(req, res, next) {
+    const authHeader = req.headers.authorization;
+    if (!authHeader) {
+        return res.status(401).send({ message: 'unauthorized access' })
+    }
+    console.log('inside', authHeader);
+    next()
+}
 
 app.get('/', (req, res) => {
     res.send('server side is running')
@@ -22,6 +32,14 @@ async function run() {
     try {
         await client.connect()
         const collectionProduct = client.db('hikingGears').collection('product')
+
+        //auth
+        app.post('/login', async (req, res) => {
+            const user = req.body;
+            const accessToken = jwt.sign(user, process.env.ACCESS_TOKEN_SECRET, { expiresIn: '1d' })
+            res.send({ accessToken })
+        })
+
 
 
         //get all products
@@ -81,8 +99,8 @@ async function run() {
         })
 
 
-        app.get('/product', async (req, res) => {
-            const email = req.query.email;  
+        app.get('/product', verifyJwt, async (req, res) => {
+            const email = req.query.email;
             console.log(email);
             const query = { email: email };
             const cursor = collectionProduct.find(query);
